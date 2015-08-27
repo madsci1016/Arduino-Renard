@@ -22,8 +22,8 @@ GNU General Public License for more details.
 *send a letter to Creative Commons, 444 Castro Street, Suite 900, Mountain View, California, 94041, USA.
 ******************************************************************/
 
-#ifndef Renard_h
-#define Renard_h
+#ifndef Arduino-Renard_h
+#define Arduino-Renard_h
 
 
 #if ARDUINO > 22
@@ -41,26 +41,38 @@ GNU General Public License for more details.
 #define FORWARDING 4
 
 class Renard {
-public:
+	public:
 
-//function to start library
-//begin(pointer to buffer, number of channels, serial port object)
-void begin(uint8_t *, uint8_t, HardwareSerial *theSerial, uint32_t);
+		//function to start library
+		//begin(pointer to buffer, number of channels, serial port object)
+		void begin(uint8_t *, uint8_t, HardwareSerial *theSerial, uint32_t);
 
-//function the services the serial port and parses the Renard data
-//returns true if a full packet of data has come in
-boolean receive();
+		//function the services the serial port and parses the Renard data
+		//returns true if a full packet of data has come in
+		boolean receive();
 
-private:
-HardwareSerial *_serial;
+	private:
+		HardwareSerial *_serial;
 
-uint8_t * address;  //address of buffer
-uint8_t size;       //size of buffer
-uint8_t rx_state;   //state machine mode
-uint8_t rx_channel; //number of channels received
+		uint8_t * address;  //address of buffer
+		uint8_t size;       //size of buffer
+		uint8_t rx_state;   //state machine mode
+		uint8_t rx_channel; //number of channels received
 
 };
 
-
+class RenardTX {
+	public:
+		void begin(uint16_t, HardwareSerial *theSerial, uint32_t);  //declare size and serial port
+		void startPacket();  							  //allocate memory
+		void setValue(uint16_t, uint8_t);                 //write to memory, applying escapes
+		void sendPacket(); 								  //Output data, clean up memory
+	
+	private:
+		HardwareSerial *_serial;
+		uint16_t _size;
+		uint8_t * _ptr;
+		
+};
 
 #endif

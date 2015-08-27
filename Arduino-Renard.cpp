@@ -1,4 +1,4 @@
-#include "Renard.h"
+#include "Arduino-Renard.h"
 
 //Captures address and size of buffer
 void Renard::begin(uint8_t * ptr, uint8_t length, HardwareSerial *theSerial, uint32_t baud){
@@ -91,4 +91,44 @@ boolean Renard::receive(){
 	}
 	
 	return rtn;
+}
+
+void RenardTX::begin(uint16_t length, HardwareSerial *theSerial, uint32_t baud){
+	
+	_size = length;
+	_serial = theSerial;
+	_serial->begin(baud);
+}
+
+void RenardTX::startPacket(){
+	
+	_ptr = (uint8_t*) malloc(_size+2);
+	_ptr[0] = 0x7E;
+	_ptr[1] = 0x80;
+	
+	
+}
+
+void RenardTX::setValue(uint16_t address, uint8_t value){
+	
+	switch (value){
+		case 0x7d:
+		_ptr[address+2] = 0x7c;
+		break;
+		case 0x7e:
+		case 0x7f:
+		_ptr[address+2] = 0x80;
+		break;
+		default:
+		_ptr[address+2] = value;
+		break;
+	}
+}
+
+void RenardTX::sendPacket(){
+	
+	_serial->write(_ptr, _size+2);
+	_serial->flush();
+	
+	free(_ptr);
 }
